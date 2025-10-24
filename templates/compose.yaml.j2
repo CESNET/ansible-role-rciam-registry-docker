@@ -1,0 +1,38 @@
+
+services:
+  federation-registry-frontend:
+    image: "cerit.io/khomutskyi/federation-registry-frontend:{{ deployment_id }}"
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - {{ federation_registry_config_path }}/frontend-config/nginx-frontend.conf:/etc/nginx/conf.d/nginx-frontend.conf:ro
+      - {{ federation_registry_config_path }}/frontend-config/federation-registry-cert.pem:/etc/ssl/certs/federation-registry-cert.pem:ro
+      - {{ federation_registry_config_path }}/frontend-config/federation-registry-key.pem:/etc/ssl/private/federation-registry-key.pem:ro
+  federation-registry-backend-api:
+    image: cerit.io/khomutskyi/federation-registry-backend-api:latest
+    restart: unless-stopped
+    volumes:
+      - {{ federation_registry_config_path }}/backend-config/config.json:/app/JavaScript/config.json:ro
+      - {{ federation_registry_config_path }}/backend-config/db-config.json:/app/db-config/db-config.json:ro
+      - {{ federation_registry_config_path }}/backend-config/tenant-config/:/app/JavaScript/tenant_config/:ro
+      - {{ federation_registry_config_path }}/backend-config/.env:/app/JavaScript/.env:ro
+{% for ams_agent_item in federation_registry_ams_agents %}
+  federation-registry-ams-agent-{{ ams_agent_item.name }}:
+    image: cerit.io/khomutskyi/federation-registry-backend-ams-agent:latest
+    restart: unless-stopped
+    volumes:
+      - {{ federation_registry_config_path }}/ams-agent/{{ ams_agent_item.config | basename }}:/app/config.json:ro
+{% endfor %}
+
+{% for rabbitmq_agent_item in federation_registry_rabbitmq_agents %}
+  federation-registry-rabbitmq-agent-{{ rabbitmq_agent_item.name }}:
+    image: cerit.io/khomutskyi/federation-registry-backend-rabbitmq-agent:latest
+    restart: unless-stopped
+    volumes:
+      - {{ federation_registry_config_path }}/rabbitmq-agent/{{ rabbitmq_agent_item.config | basename }}:/app/config.json:ro
+{% endfor %}
+networks:
+    default:
+        name: rciam-registry_default

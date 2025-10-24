@@ -1,0 +1,33 @@
+#SPDX-License-Identifier: Apache-2.0
+---
+deployment_id: localhost # Update to your specific deployment ID
+base_uri: "https://{{ deployment_id }}" # without tailing /
+# defaults file for cesnet.federation_registry
+federation_registry_config_path: /etc/rciam-registry/
+federation_registry_dirs:
+  - { path: "{{ federation_registry_config_path }}/frontend-config", owner: "root", group: "root", mode: "0755" }
+  - { path: "{{ federation_registry_config_path }}/backend-config", owner: "root", group: "root", mode: "0755" }
+  - { path: "{{ federation_registry_config_path }}/ams-agent", owner: "root", group: "root", mode: "0755" }
+  - { path: "{{ federation_registry_config_path }}/rabbitmq-agent", owner: "root", group: "root", mode: "0755" }
+
+
+federation_registry_files:
+  - { src: "files/{{ deployment_id }}/backend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: "root", mode: "0644" }
+  - { src: "files/{{ deployment_id }}/frontend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: "root", mode: "0644" }
+  - { src: "files/{{ deployment_id }}/ams-agent", dest: "{{ federation_registry_config_path }}", owner: "root", group: "root", mode: "0644" }
+
+federation_registry_templates: # without .j2, ensure the destination is file (not directory).
+  - { src: "templates/backend-config/db-config.json", dest: "{{ federation_registry_config_path }}/backend-config/db-config.json" }
+  - { src: "templates/backend-config/.env", dest: "{{ federation_registry_config_path }}/backend-config/.env" }
+  - { src: "templates/compose.yaml", dest: "{{ federation_registry_config_path }}/compose.yaml" }
+
+federation_registry_ams_agents: []
+#  - name: ams_agent_one
+#    config: "files/{{ deployment_id }}/ams-agent/ams_agent_one_config.json"
+#  - name: ams_agent_two
+#    config: "files/{{ deployment_id }}/ams-agent/ams_agent_two_config.json"
+#
+
+federation_registry_rabbitmq_agents: []
+#  - name: rabbitmq_agent_one
+#    config: "files/{{ deployment_id }}/rabbitmq-agent/rabbitmq_agent_one_config.json"

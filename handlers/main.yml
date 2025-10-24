@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: Apache-2.0
+---
+# handlers file for cesnet.rciam_registry
+- name: Restart all containers of RCIAM federation registry
+  community.docker.docker_compose_v2:
+    project_src: "{{ federation_registry_config_path }}"
+    state: restarted
