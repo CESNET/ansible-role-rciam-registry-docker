@@ -1,6 +1,7 @@
+{{ ansible_managed | comment}}
 
 services:
-  federation-registry-frontend:
+  frontend:
     image: "cerit.io/khomutskyi/federation-registry-frontend:{{ deployment_id }}"
     restart: unless-stopped
     ports:
@@ -11,15 +12,16 @@ services:
       - {{ federation_registry_config_path }}/frontend-config/federation-registry-cert.pem:/etc/ssl/certs/federation-registry-cert.pem:ro
       - {{ federation_registry_config_path }}/frontend-config/federation-registry-key.pem:/etc/ssl/private/federation-registry-key.pem:ro
     depends_on:
-      - federation-registry-backend-api
+      - backend-api
     healthcheck:
       test: ["CMD", "curl", "--insecure", "-f", "https://localhost/federation-backend/tenants/"]
       interval: 1m
       retries: 3
       start_period: 30s
       start_interval: 5s
+    container_name: rciam-registry_frontend
 
-  federation-registry-backend-api:
+  backend-api:
     image: cerit.io/khomutskyi/federation-registry-backend-api:latest
     restart: unless-stopped
     volumes:
@@ -33,26 +35,32 @@ services:
       retries: 3
       start_period: 30s
       start_interval: 5s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    container_name: rciam-registry_backend-api
 
 {% for ams_agent_item in federation_registry_ams_agents %}
-  federation-registry-ams-agent-{{ ams_agent_item.name }}:
+  ams-agent-{{ ams_agent_item.name }}:
     image: cerit.io/khomutskyi/federation-registry-backend-ams-agent:latest
     restart: unless-stopped
     volumes:
       - {{ federation_registry_config_path }}/ams-agent/{{ ams_agent_item.config | basename }}:/app/config.json:ro
     depends_on:
-        - federation-registry-backend-api
+        - backend-api
+    container_name: rciam-registry_ams-agent-{{ ams_agent_item.name }}
 
 {% endfor %}
 {% for rabbitmq_agent_item in federation_registry_rabbitmq_agents %}
-  federation-registry-rabbitmq-agent-{{ rabbitmq_agent_item.name }}:
+  rabbitmq-agent-{{ rabbitmq_agent_item.name }}:
     depends_on:
-      - federation-registry-backend-api
+      - backend-api
     image: cerit.io/khomutskyi/federation-registry-backend-rabbitmq-agent:latest
     restart: unless-stopped
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq-agent/{{ rabbitmq_agent_item.config | basename }}:/app/config.json:ro
+    container_name: rciam-registry_rabbitmq-agent-{{ rabbitmq_agent_item.name }}
+
 {% endfor %}
 networks:
     default:
-        name: rciam-registry_default
+      name: rciam-registry_default

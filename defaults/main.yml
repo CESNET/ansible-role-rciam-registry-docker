@@ -1,6 +1,7 @@
 #SPDX-License-Identifier: Apache-2.0
 ---
 deployment_id: localhost # Update to your specific deployment ID
+backend_env: dev
 base_uri: "https://{{ deployment_id }}" # without tailing /
 # defaults file for cesnet.federation_registry
 federation_registry_config_path: /etc/rciam-registry/
