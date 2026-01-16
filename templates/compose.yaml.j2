@@ -29,6 +29,7 @@ services:
       - {{ federation_registry_config_path }}/backend-config/db-config.json:/app/db-config/db-config.json:ro
       - {{ federation_registry_config_path }}/backend-config/tenant-config/:/app/JavaScript/tenant_config/:ro
       - {{ federation_registry_config_path }}/backend-config/.env:/app/JavaScript/.env:ro
+      - {{ federation_registry_log_path }}/backend-api-errors.log:/app/JavaScript/db/errors.log
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/tenants/"]
       interval: 1m

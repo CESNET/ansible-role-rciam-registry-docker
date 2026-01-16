@@ -61,6 +61,16 @@
   tags:
     - configuration
 
+- name: Ensure log file exists for the backend-api
+  ansible.builtin.file:
+    access_time: preserve
+    modification_time: preserve
+    path: "{{ federation_registry_log_path}}/backend-api-errors.log"
+    state: touch
+    owner: 1000
+    mode: 0750
+    attributes: +a
+
 - name: Ensure federation_registry docker-compose has started
   community.docker.docker_compose_v2:
     project_src: "{{ federation_registry_config_path }}"

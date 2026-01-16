@@ -5,11 +5,13 @@ backend_env: dev
 base_uri: "https://{{ deployment_id }}" # without tailing /
 # defaults file for cesnet.federation_registry
 federation_registry_config_path: /etc/rciam-registry/
+federation_registry_log_path: /var/log/rciam-registry/
 federation_registry_dirs:
   - { path: "{{ federation_registry_config_path }}/frontend-config", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_config_path }}/backend-config", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_config_path }}/ams-agent", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_config_path }}/rabbitmq-agent", owner: "root", group: "root", mode: "0755" }
+  - { path: "{{ federation_registry_log_path }}", owner: "root", group: 1000, mode: "0750" }
 
 
 federation_registry_files:
