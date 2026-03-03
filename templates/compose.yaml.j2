@@ -40,6 +40,19 @@ services:
       - "host.docker.internal:host-gateway"
     container_name: rciam-registry_backend-api
 
+### Deployer
+{% for deployer_item in federation_registry_deployers %}
+  deployer-{{ deployer_item.name }}:
+    image: cerit.io/khomutskyi/federation-registry-deployer:latest
+    restart: unless-stopped
+    volumes:
+      - {{ federation_registry_config_path }}/deployer/{{ deployer_item.config_dir | basename }}:/app/conf:ro
+    depends_on:
+        - backend-api
+    container_name: rciam-registry_deployer-{{ deployer_item.name }}
+{% endfor %}
+
+### Agents
 {% for ams_agent_item in federation_registry_ams_agents %}
   ams-agent-{{ ams_agent_item.name }}:
     image: cerit.io/khomutskyi/federation-registry-backend-ams-agent:latest
