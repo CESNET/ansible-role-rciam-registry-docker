@@ -1,7 +1,3 @@
 {
-  "host": "{{ db_config.host }}",
-  "port": {{ db_config.port }},
-  "database": "{{ db_config.database }}",
-  "user": "{{ db_config.user }}",
-  "password": "{{ db_config.password }}"
+  "connectionString": "postgres://{{ db_config.user }}:{{ db_config.password }}@{{ db_config.host }}/{{ db_config.database }}?sslmode={{ db_config.sslmode }}"
 }
