@@ -5,14 +5,18 @@ backend_env: dev
 base_uri: "https://{{ deployment_id }}" # without tailing /
 # defaults file for cesnet.federation_registry
 federation_registry_config_path: /etc/rciam-registry/
+federation_registry_data_path: /var/lib/rciam-registry/
 federation_registry_log_path: /var/log/rciam-registry/
 federation_registry_dirs:
   - { path: "{{ federation_registry_config_path }}/frontend-config", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_config_path }}/backend-config", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_config_path }}/ams-agent", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_config_path }}/rabbitmq-agent", owner: "root", group: "root", mode: "0755" }
+  - { path: "{{ federation_registry_config_path }}/rabbitmq", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_config_path }}/deployer", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_log_path }}", owner: "root", group: 1000, mode: "0750" }
+  - { path: "{{ federation_registry_data_path }}", owner: "root", group: 1000, mode: "0750" }
+  - { path: "{{ federation_registry_data_path }}/rabbitmq", owner: 415, group: 415, mode: "0700" } # rabbitmq user in container
 
 
 federation_registry_files:
@@ -25,6 +29,7 @@ federation_registry_templates: # without .j2, ensure the destination is file (no
   - { src: "templates/backend-config/db-config.json", dest: "{{ federation_registry_config_path }}/backend-config/db-config.json" }
   - { src: "templates/backend-config/.env", dest: "{{ federation_registry_config_path }}/backend-config/.env" }
   - { src: "templates/compose.yaml", dest: "{{ federation_registry_config_path }}/compose.yaml" }
+  - { src: "templates/rabbitmq/rabbitmq.conf", dest: "{{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf" }
 
 federation_registry_ams_agents: []
 #  - name: ams_agent_one

@@ -40,6 +40,14 @@ services:
       - "host.docker.internal:host-gateway"
     container_name: rciam-registry_backend-api
 
+### RabbitMQ
+  rabbitmq:
+    image: cerit.io/khomutskyi/federation-registry-rabbitmq:latest
+    restart: unless-stopped
+    volumes:
+      - {{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - /var/lib/rciam-registry/rabbitmq:/var/lib/rabbitmq:rw
+    container_name: rciam-registry_rabbitmq
 ### Deployer
 {% for deployer_item in federation_registry_deployers %}
   deployer-{{ deployer_item.name }}:
@@ -49,6 +57,7 @@ services:
       - {{ federation_registry_config_path }}/deployer/{{ deployer_item.config_dir | basename }}:/app/conf:ro
     depends_on:
         - backend-api
+        - rabbitmq
     container_name: rciam-registry_deployer-{{ deployer_item.name }}
 {% endfor %}
 
@@ -68,6 +77,7 @@ services:
   rabbitmq-agent-{{ rabbitmq_agent_item.name }}:
     depends_on:
       - backend-api
+      - rabbitmq
     image: cerit.io/khomutskyi/federation-registry-backend-rabbitmq-agent:latest
     restart: unless-stopped
     volumes:
