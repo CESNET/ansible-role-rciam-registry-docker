@@ -8,28 +8,28 @@ federation_registry_config_path: /etc/rciam-registry/
 federation_registry_data_path: /var/lib/rciam-registry/
 federation_registry_log_path: /var/log/rciam-registry/
 federation_registry_dirs:
-  - { path: "{{ federation_registry_config_path }}/frontend-config", owner: "root", group: "root", mode: "0755" }
-  - { path: "{{ federation_registry_config_path }}/backend-config", owner: "root", group: "root", mode: "0755" }
-  - { path: "{{ federation_registry_config_path }}/ams-agent", owner: "root", group: "root", mode: "0755" }
-  - { path: "{{ federation_registry_config_path }}/rabbitmq-agent", owner: "root", group: "root", mode: "0755" }
-  - { path: "{{ federation_registry_config_path }}/rabbitmq", owner: "root", group: "root", mode: "0755" }
-  - { path: "{{ federation_registry_config_path }}/deployer", owner: "root", group: "root", mode: "0755" }
+  - { path: "{{ federation_registry_config_path }}/frontend-config", owner: "root", group: 101, mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/backend-config", owner: "root", group: "root", mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/ams-agent", owner: "root", group: "root", mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/rabbitmq-agent", owner: "root", group: "root", mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/rabbitmq", owner: "root", group: 415, mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/deployer", owner: "root", group: 1000, mode: "0750" }
   - { path: "{{ federation_registry_log_path }}", owner: "root", group: 1000, mode: "0750" }
   - { path: "{{ federation_registry_data_path }}", owner: "root", group: 1000, mode: "0750" }
   - { path: "{{ federation_registry_data_path }}/rabbitmq", owner: 415, group: 415, mode: "0700" } # rabbitmq user in container
 
 
 federation_registry_files:
-  - { src: "files/{{ deployment_id }}/backend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: "root", mode: "0644" }
-  - { src: "files/{{ deployment_id }}/frontend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: "root", mode: "0644" }
-  - { src: "files/{{ deployment_id }}/ams-agent", dest: "{{ federation_registry_config_path }}", owner: "root", group: "root", mode: "0644" }
-  - { src: "files/{{ deployment_id }}/deployer", dest: "{{ federation_registry_config_path }}", owner: "root", group: "root", mode: "0644" }
+  - { src: "files/{{ deployment_id }}/backend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: 1000, mode: "0640" }
+  - { src: "files/{{ deployment_id }}/frontend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: 101, mode: "0640" }
+  - { src: "files/{{ deployment_id }}/ams-agent", dest: "{{ federation_registry_config_path }}", owner: "root", group: 1000, mode: "0640" }
+  - { src: "files/{{ deployment_id }}/deployer", dest: "{{ federation_registry_config_path }}", owner: "root", group: 1000, mode: "0640" }
 
 federation_registry_templates: # without .j2, ensure the destination is file (not directory).
-  - { src: "templates/backend-config/db-config.json", dest: "{{ federation_registry_config_path }}/backend-config/db-config.json" }
-  - { src: "templates/backend-config/.env", dest: "{{ federation_registry_config_path }}/backend-config/.env" }
-  - { src: "templates/compose.yaml", dest: "{{ federation_registry_config_path }}/compose.yaml" }
-  - { src: "templates/rabbitmq/rabbitmq.conf", dest: "{{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf" }
+  - { src: "templates/backend-config/db-config.json", dest: "{{ federation_registry_config_path }}/backend-config/db-config.json", group: 1000, mode: "0640" }
+  - { src: "templates/backend-config/.env", dest: "{{ federation_registry_config_path }}/backend-config/.env", group: 1000, mode: "0640" }
+  - { src: "templates/compose.yaml", dest: "{{ federation_registry_config_path }}/compose.yaml", mode: "0640" }
+  - { src: "templates/rabbitmq/rabbitmq.conf", dest: "{{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf", group: 415, mode: "0640" }
 
 federation_registry_ams_agents: []
 #  - name: ams_agent_one
