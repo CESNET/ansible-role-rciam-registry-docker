@@ -75,3 +75,4 @@
   community.docker.docker_compose_v2:
     project_src: "{{ federation_registry_config_path }}"
     state: present
+    remove_orphans: true
