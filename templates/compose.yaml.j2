@@ -26,6 +26,7 @@ services:
     restart: unless-stopped
     volumes:
       - {{ federation_registry_config_path }}/backend-config/config.json:/app/JavaScript/config.json:ro
+      - {{ federation_registry_config_path }}/backend-config/email_transport_conf.json:/app/JavaScript/email_transport_conf.json:ro
       - {{ federation_registry_config_path }}/backend-config/db-config.json:/app/db-config/db-config.json:ro
       - {{ federation_registry_config_path }}/backend-config/tenant-config/:/app/JavaScript/tenant_config/:ro
       - {{ federation_registry_config_path }}/backend-config/.env:/app/JavaScript/.env:ro
