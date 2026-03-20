@@ -11,6 +11,7 @@ services:
       - {{ federation_registry_config_path }}/frontend-config/nginx-frontend.conf:/etc/nginx/conf.d/nginx-frontend.conf:ro
       - {{ federation_registry_config_path }}/frontend-config/federation-registry-cert.pem:/etc/ssl/certs/federation-registry-cert.pem:ro
       - {{ federation_registry_config_path }}/frontend-config/federation-registry-key.pem:/etc/ssl/private/federation-registry-key.pem:ro
+      - {{ federation_registry_config_path }}/frontend-config/img/:/var/www/federation_registry_frontend/img/:ro
     depends_on:
       - backend-api
     healthcheck:
