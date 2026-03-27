@@ -76,3 +76,4 @@
     project_src: "{{ federation_registry_config_path }}"
     state: present
     remove_orphans: true
+    pull: always
