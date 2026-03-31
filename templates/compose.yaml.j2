@@ -13,7 +13,8 @@ services:
       - {{ federation_registry_config_path }}/frontend-config/federation-registry-key.pem:/etc/ssl/private/federation-registry-key.pem:ro
       - {{ federation_registry_config_path }}/frontend-config/img/:/var/www/federation_registry_frontend/img/:ro
     depends_on:
-      - backend-api
+      backend-api:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "--insecure", "-f", "https://localhost/federation-backend/tenants/"]
       interval: 1m
@@ -33,7 +34,8 @@ services:
       - {{ federation_registry_config_path }}/backend-config/.env:/app/JavaScript/.env:ro
       - {{ federation_registry_log_path }}/backend-api-errors.log:/app/JavaScript/db/errors.log
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/tenants/"]
       interval: 1m
@@ -66,8 +68,10 @@ services:
     volumes:
       - {{ federation_registry_config_path }}/deployer/{{ deployer_item.config_dir | basename }}:/app/conf:ro
     depends_on:
-        - backend-api
-        - rabbitmq
+      backend-api:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     container_name: rciam-registry_deployer-{{ deployer_item.name }}
 {% endfor %}
 
@@ -79,15 +83,18 @@ services:
     volumes:
       - {{ federation_registry_config_path }}/ams-agent/{{ ams_agent_item.config | basename }}:/app/config.json:ro
     depends_on:
-        - backend-api
+      backend-api:
+        condition: service_healthy
     container_name: rciam-registry_ams-agent-{{ ams_agent_item.name }}
 
 {% endfor %}
 {% for rabbitmq_agent_item in federation_registry_rabbitmq_agents %}
   rabbitmq-agent-{{ rabbitmq_agent_item.name }}:
     depends_on:
-      - backend-api
-      - rabbitmq
+      backend-api:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     image: cerit.io/khomutskyi/federation-registry-backend-rabbitmq-agent:latest
     restart: unless-stopped
     volumes:
