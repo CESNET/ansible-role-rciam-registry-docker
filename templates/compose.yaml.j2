@@ -52,6 +52,12 @@ services:
       - {{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - /var/lib/rciam-registry/rabbitmq:/var/lib/rabbitmq:rw
     container_name: rciam-registry_rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 90s
+      retries: 2
+      start_period: 40s
+      start_interval: 10s
 ### Deployer
 {% for deployer_item in federation_registry_deployers %}
   deployer-{{ deployer_item.name }}:
