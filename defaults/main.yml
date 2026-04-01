@@ -1,8 +1,20 @@
 #SPDX-License-Identifier: Apache-2.0
 ---
 deployment_id: localhost # Update to your specific deployment ID
-backend_env: dev
 base_uri: "https://{{ deployment_id }}" # without tailing /
+backend_env: dev
+db_config:
+  host: host.docker.internal
+  port: 5432
+  database: federation_registry
+  user: federation_registry
+  password: mystery_but_not_so_secret
+  sslmode: verify-full
+
+backend_rabbitmq_user: federation_registry_rabbitmquser
+backend_rabbitmq_host: rabbitmq.example.com
+backend_rabbitmq_vhost: example_com_fedreg
+backend_rabbitmq_password: romaine_lettuce
 # defaults file for cesnet.federation_registry
 federation_registry_config_path: /etc/rciam-registry/
 federation_registry_data_path: /var/lib/rciam-registry/
@@ -37,6 +49,10 @@ federation_registry_ams_agents: []
 #  - name: ams_agent_two
 #    config: "files/{{ deployment_id }}/ams-agent/ams_agent_two_config.json"
 #
+
+federation_registry_deployers: []
+#   - name: cas_rabbitmq
+#     config_dir: "files/{{ deployment_id }}/deployer/cas_rabbitmq"
 
 federation_registry_rabbitmq_agents: []
 #  - name: rabbitmq_agent_one
