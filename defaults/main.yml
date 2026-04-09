@@ -2,6 +2,7 @@
 ---
 deployment_id: localhost # Update to your specific deployment ID
 base_uri: "https://{{ deployment_id }}" # without tailing /
+tenant_name: tenant_name
 backend_env: dev
 db_config:
   host: host.docker.internal
@@ -28,6 +29,7 @@ federation_registry_dirs:
   - { path: "{{ federation_registry_config_path }}/rabbitmq", owner: "root", group: 415, mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/deployer", owner: "root", group: 1000, mode: "0750" }
   - { path: "{{ federation_registry_log_path }}", owner: "root", group: 1000, mode: "0750" }
+  - { path: "{{ federation_registry_log_path }}/backend-api", owner: "root", group: 1000, mode: "0750" }
   - { path: "{{ federation_registry_data_path }}", owner: "root", group: 1000, mode: "0750" }
   - { path: "{{ federation_registry_data_path }}/rabbitmq", owner: 415, group: 415, mode: "0700" } # rabbitmq user in container
 

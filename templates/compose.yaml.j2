@@ -17,7 +17,7 @@ services:
       backend-api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "--insecure", "-f", "https://localhost/federation-backend/tenants/"]
+      test: ["CMD", "curl", "--insecure", "-f", "https://localhost/federation-backend/tenants/{{ tenant_name }}"]
       interval: 1m
       retries: 3
       start_period: 30s
@@ -37,12 +37,13 @@ services:
       - {{ federation_registry_config_path }}/backend-config/db-config.json:/app/db-config/db-config.json:ro
       - {{ federation_registry_config_path }}/backend-config/tenant-config/:/app/JavaScript/tenant_config/:ro
       - {{ federation_registry_config_path }}/backend-config/.env:/app/JavaScript/.env:ro
-      - {{ federation_registry_log_path }}/backend-api-errors.log:/app/JavaScript/db/errors.log
+      - {{ federation_registry_log_path }}/backend-api-errors.log:/app/JavaScript/db/errors.log:rw
+      - {{ federation_registry_log_path }}/backend-api:/app/JavaScript/logs/:rw
     depends_on:
       rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/tenants/"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000/tenants/{{ tenant_name }}"]
       interval: 1m
       retries: 3
       start_period: 30s
