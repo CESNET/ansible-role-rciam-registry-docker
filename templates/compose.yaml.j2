@@ -3,10 +3,8 @@
 services:
   frontend:
     image: "cerit.io/khomutskyi/federation-registry-frontend:{{ deployment_id }}"
+    network_mode: host
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
     volumes:
       - {{ federation_registry_config_path }}/frontend-config/nginx-frontend.conf:/etc/nginx/conf.d/nginx-frontend.conf:ro
       - {{ federation_registry_config_path }}/frontend-config/federation-registry-cert.pem:/etc/ssl/certs/federation-registry-cert.pem:ro
@@ -31,6 +29,9 @@ services:
   backend-api:
     image: cerit.io/khomutskyi/federation-registry-backend-api:latest
     restart: unless-stopped
+    networks:
+      backend:
+        ipv4_address: 172.19.0.80
     volumes:
       - {{ federation_registry_config_path }}/backend-config/config.json:/app/JavaScript/config.json:ro
       - {{ federation_registry_config_path }}/backend-config/email_transport_conf.json:/app/JavaScript/email_transport_conf.json:ro
@@ -56,6 +57,11 @@ services:
   rabbitmq:
     image: cerit.io/khomutskyi/federation-registry-rabbitmq:latest
     restart: unless-stopped
+    networks:
+      rabbitmq-agent:
+        ipv4_address: 172.20.0.56
+      deployer:
+        ipv4_address: 172.21.0.56
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - /var/lib/rciam-registry/rabbitmq:/var/lib/rabbitmq:rw
@@ -71,6 +77,8 @@ services:
   deployer-{{ deployer_item.name }}:
     image: cerit.io/khomutskyi/federation-registry-deployer:latest
     restart: unless-stopped
+    networks:
+      - deployer
     volumes:
       - {{ federation_registry_config_path }}/deployer/{{ deployer_item.config_dir | basename }}:/app/conf:ro
     depends_on:
@@ -91,13 +99,30 @@ services:
         condition: service_healthy
     image: cerit.io/khomutskyi/federation-registry-backend-rabbitmq-agent:latest
     restart: unless-stopped
+    networks:
+      - backend
+      - rabbitmq-agent
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq-agent/{{ rabbitmq_agent_item.config | basename }}:/app/config.json:ro
     container_name: rciam-registry_rabbitmq-agent-{{ rabbitmq_agent_item.name }}
 
 {% endfor %}
 networks:
-    default:
-      name: rciam-registry_default
-    nointernet:
-      internal: true
+    backend:
+      name: rciam-registry_backend
+      ipam:
+        driver: default
+        config:
+          - subnet: "172.19.0.0/24"
+    rabbitmq-agent:
+      name: rciam-registry_rabbitmq-agent
+      ipam:
+        driver: default
+        config:
+          - subnet: "172.20.0.0/24"
+    deployer:
+      name: rciam-registry_deployer
+      ipam:
+        driver: default
+        config:
+          - subnet: "172.21.0.0/24"
