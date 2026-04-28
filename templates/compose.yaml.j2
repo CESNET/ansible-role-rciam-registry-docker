@@ -66,6 +66,9 @@ services:
       - {{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - /var/lib/rciam-registry/rabbitmq:/var/lib/rabbitmq:rw
     container_name: rciam-registry_rabbitmq
+    environment:
+      # Tune for lower resource usage for mostly idle RabbitMQ. Reduce the number of scheduler threads, lower limits, increase the GC interval.
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 1:1 +SDio 1 +P 1024 +Q 1024 +t 50000 +swct very_lazy +swt very_high +scl false +zdntgc 900"
     healthcheck:
       test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
       interval: 90s
