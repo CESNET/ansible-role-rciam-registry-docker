@@ -24,7 +24,6 @@ federation_registry_dirs:
   - { path: "{{ federation_registry_config_path }}/frontend-config", owner: "root", group: 101, mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/frontend-config/.well-known", owner: "root", group: 101, mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/backend-config", owner: "root", group: "root", mode: "0750" }
-  - { path: "{{ federation_registry_config_path }}/ams-agent", owner: "root", group: "root", mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/rabbitmq-agent", owner: "root", group: "root", mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/rabbitmq", owner: "root", group: 415, mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/deployer", owner: "root", group: 1000, mode: "0750" }
@@ -37,7 +36,6 @@ federation_registry_dirs:
 federation_registry_files:
   - { src: "files/{{ deployment_id }}/backend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: 1000, mode: "0640" }
   - { src: "files/{{ deployment_id }}/frontend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: 101, mode: "0640" }
-  - { src: "files/{{ deployment_id }}/ams-agent", dest: "{{ federation_registry_config_path }}", owner: "root", group: 1000, mode: "0640" }
   - { src: "files/{{ deployment_id }}/deployer", dest: "{{ federation_registry_config_path }}", owner: "root", group: 1000, mode: "0640" }
 
 federation_registry_templates: # without .j2, ensure the destination is file (not directory).
@@ -46,12 +44,6 @@ federation_registry_templates: # without .j2, ensure the destination is file (no
   - { src: "templates/compose.yaml", dest: "{{ federation_registry_config_path }}/compose.yaml", mode: "0640" }
   - { src: "templates/rabbitmq/rabbitmq.conf", dest: "{{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf", group: 415, mode: "0640" }
 
-federation_registry_ams_agents: []
-#  - name: ams_agent_one
-#    config: "files/{{ deployment_id }}/ams-agent/ams_agent_one_config.json"
-#  - name: ams_agent_two
-#    config: "files/{{ deployment_id }}/ams-agent/ams_agent_two_config.json"
-#
 
 federation_registry_deployers: []
 #   - name: cas_rabbitmq

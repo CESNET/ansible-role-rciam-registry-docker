@@ -8,7 +8,6 @@ Components:
 3. RabbitMQ agent --- communicates to the backend-api, and places change requests on a RabbitMQ queue.
 4. Deployer --- processes the change requests from RabbitMQ, and redirects it to CAS and Perun.
 5. RabbitMQ --- connects RabbitMQ agent and deployer.
-6. AMS Agent (optional) --- alternative to the RabbitMQ agent, but using AMS messaging.
 
 The user of this role is responsible for providing the configuration files. Samples are available in files/localhost, where localhost is deployment_id.
 The role assumes the use of private container images.
