@@ -33,7 +33,9 @@ services:
     restart: unless-stopped
     networks:
       backend:
-        ipv4_address: 172.19.0.80
+        # ipv4_address: 172.19.0.80
+        ipv6_address: fd77:fed:bac::80
+
     volumes:
       - {{ federation_registry_config_path }}/backend-config/config.json:/app/JavaScript/config.json:ro
       - {{ federation_registry_config_path }}/backend-config/email_transport_conf.json:/app/JavaScript/email_transport_conf.json:ro
@@ -63,9 +65,11 @@ services:
     restart: unless-stopped
     networks:
       rabbitmq-agent:
-        ipv4_address: 172.20.0.56
+        # ipv4_address: 172.20.0.56
+        ipv6_address: fd77:fed:abba::56
       deployer:
         ipv4_address: 172.21.0.56
+        ipv6_address: fd77:fed:de::56
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - /var/lib/rciam-registry/rabbitmq:/var/lib/rabbitmq:rw
@@ -127,15 +131,33 @@ networks:
         driver: default
         config:
           - subnet: "172.19.0.0/24"
+          - subnet: "fd77:fed:bac::/64"
+      enable_ipv4: false
+      enable_ipv6: true
+      driver_opts:
+        com.docker.network.bridge.name: rcr_backend-api
+
     rabbitmq-agent:
       name: rciam-registry_rabbitmq-agent
       ipam:
         driver: default
         config:
           - subnet: "172.20.0.0/24"
+          - subnet: "fd77:fed:abba::/64"
+      enable_ipv4: false
+      enable_ipv6: true
+      internal: true
+      driver_opts:
+        com.docker.network.bridge.name: rcr_rmq-agent
+
     deployer:
       name: rciam-registry_deployer
       ipam:
         driver: default
         config:
           - subnet: "172.21.0.0/24"
+          - subnet: "fd77:fed:de::/64"
+      enable_ipv4: true
+      enable_ipv6: true
+      driver_opts:
+        com.docker.network.bridge.name: rcr_deployer
