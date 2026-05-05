@@ -25,6 +25,7 @@ services:
       nofile:
         soft: 16384
         hard: 16384
+    cpu_shares: 30
     container_name: rciam-registry_frontend
 
   backend-api:
@@ -53,6 +54,7 @@ services:
       start_interval: 5s
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    cpu_shares: 35
     container_name: rciam-registry_backend-api
 
 ### RabbitMQ
@@ -68,7 +70,6 @@ services:
       - {{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - /var/lib/rciam-registry/rabbitmq:/var/lib/rabbitmq:rw
       - /etc/localtime:/etc/localtime:ro
-    container_name: rciam-registry_rabbitmq
     environment:
       # Tune for lower resource usage for mostly idle RabbitMQ. Reduce the number of scheduler threads, lower limits, increase the GC interval.
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 1:1 +SDio 1 +P 1024 +Q 1024 +t 50000 +swct very_lazy +swt very_high +scl false +zdntgc 900"
@@ -78,6 +79,8 @@ services:
       retries: 2
       start_period: 40s
       start_interval: 10s
+    cpu_shares: 15
+    container_name: rciam-registry_rabbitmq
 ### Deployer
 {% for deployer_item in federation_registry_deployers %}
   deployer-{{ deployer_item.name }}:
@@ -93,6 +96,7 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    cpu_shares: 10
     container_name: rciam-registry_deployer-{{ deployer_item.name }}
 {% endfor %}
 
@@ -112,6 +116,7 @@ services:
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq-agent/{{ rabbitmq_agent_item.config | basename }}:/app/config.json:ro
       - /etc/localtime:/etc/localtime:ro
+    cpu_shares: 10
     container_name: rciam-registry_rabbitmq-agent-{{ rabbitmq_agent_item.name }}
 
 {% endfor %}
