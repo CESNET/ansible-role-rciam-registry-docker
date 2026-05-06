@@ -26,6 +26,7 @@ services:
         soft: 16384
         hard: 16384
     cpu_shares: 30
+    hostname: "frontend.{{ deployment_id }}"
     container_name: rciam-registry_frontend
 
   backend-api:
@@ -57,6 +58,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     cpu_shares: 35
+    hostname: "backend-api.{{ deployment_id }}"
     container_name: rciam-registry_backend-api
 
 ### RabbitMQ
@@ -84,6 +86,7 @@ services:
       start_period: 40s
       start_interval: 10s
     cpu_shares: 15
+    hostname: "rabbitmq.{{ deployment_id }}"
     container_name: rciam-registry_rabbitmq
 ### Deployer
 {% for deployer_item in federation_registry_deployers %}
@@ -103,6 +106,7 @@ services:
       rabbitmq:
         condition: service_healthy
     cpu_shares: 10
+    hostname: "deployer-{{ deployer_item.name }}.{{ deployment_id }}"
     container_name: rciam-registry_deployer-{{ deployer_item.name }}
 {% endfor %}
 
@@ -125,6 +129,7 @@ services:
       - {{ federation_registry_config_path }}/rabbitmq-agent/{{ rabbitmq_agent_item.config | basename }}:/app/config.json:ro
       - /etc/localtime:/etc/localtime:ro
     cpu_shares: 10
+    hostname: "rabbitmq-agent-{{ rabbitmq_agent_item.name }}.{{ deployment_id }}"
     container_name: rciam-registry_rabbitmq-agent-{{ rabbitmq_agent_item.name }}
 
 {% endfor %}
