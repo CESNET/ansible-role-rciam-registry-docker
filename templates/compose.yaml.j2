@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
     networks:
       backend:
-        # ipv4_address: 172.19.0.80
+        ipv4_address: 172.19.0.80
         ipv6_address: fd77:fed:bac::80
 
     volumes:
@@ -122,6 +122,7 @@ services:
     restart: unless-stopped
     networks:
       backend:
+        ipv4_address: "172.19.0.{{ rabbitmq_agent_item.id }}"
         ipv6_address: "fd77:fed:bac::{{ rabbitmq_agent_item.id }}"
       rabbitmq-agent:
         ipv6_address: "fd77:fed:abba::{{ rabbitmq_agent_item.id }}"
@@ -141,7 +142,7 @@ networks:
         config:
           - subnet: "172.19.0.0/24"
           - subnet: "fd77:fed:bac::/64"
-      enable_ipv4: false
+      enable_ipv4: true
       enable_ipv6: true
       driver_opts:
         com.docker.network.bridge.name: rcr_backend
