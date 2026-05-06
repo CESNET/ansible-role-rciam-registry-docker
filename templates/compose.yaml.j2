@@ -91,7 +91,9 @@ services:
     image: cerit.io/khomutskyi/federation-registry-deployer:latest
     restart: unless-stopped
     networks:
-      - deployer
+      deployer:
+        ipv4_address: "172.21.0.{{ deployer_item.id }}"
+        ipv6_address: "fd77:fed:de::{{ deployer_item.id }}"
     volumes:
       - {{ federation_registry_config_path }}/deployer/{{ deployer_item.config_dir | basename }}:/app/conf:ro
       - /etc/localtime:/etc/localtime:ro
@@ -115,8 +117,10 @@ services:
     image: cerit.io/khomutskyi/federation-registry-backend-rabbitmq-agent:latest
     restart: unless-stopped
     networks:
-      - backend
-      - rabbitmq-agent
+      backend:
+        ipv6_address: "fd77:fed:bac::{{ rabbitmq_agent_item.id }}"
+      rabbitmq-agent:
+        ipv6_address: "fd77:fed:abba::{{ rabbitmq_agent_item.id }}"
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq-agent/{{ rabbitmq_agent_item.config | basename }}:/app/config.json:ro
       - /etc/localtime:/etc/localtime:ro
