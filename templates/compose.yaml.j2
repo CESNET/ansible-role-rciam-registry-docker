@@ -144,7 +144,8 @@ networks:
       enable_ipv4: false
       enable_ipv6: true
       driver_opts:
-        com.docker.network.bridge.name: rcr_backend-api
+        com.docker.network.bridge.name: rcr_backend
+        com.docker.network.container_iface_prefix: backend
         com.docker.network.driver.mtu: 9000
 
     rabbitmq-agent:
@@ -159,6 +160,7 @@ networks:
       internal: true
       driver_opts:
         com.docker.network.bridge.name: rcr_rmq-agent
+        com.docker.network.container_iface_prefix: rmq-agent
         com.docker.network.driver.mtu: 65535
 
     deployer:
@@ -172,4 +174,5 @@ networks:
       enable_ipv6: true
       driver_opts:
         com.docker.network.bridge.name: rcr_deployer
+        com.docker.network.container_iface_prefix: deployer
         # com.docker.network.driver.mtu: 9000
