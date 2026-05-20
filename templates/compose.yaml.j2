@@ -17,11 +17,11 @@ services:
       backend-api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "--insecure", "-f", "https://localhost/federation-backend/tenants/{{ tenant_name }}"]
+      test: ["CMD", "curl", "-q", "--tlsv1.3", "--max-time", "1", "--retry", "3", "-sfN", "--false-start", "--insecure", "--curves", "X25519:prime256v1", "-o", "/dev/null", "--head", "https://localhost/index.html"]
       interval: 1m
-      retries: 3
-      start_period: 30s
-      start_interval: 5s
+      retries: 1
+      start_period: 10s
+      start_interval: 1s
     ulimits:
       nofile:
         soft: 16384
@@ -51,11 +51,11 @@ services:
       rabbitmq:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/tenants/{{ tenant_name }}"]
+      test: ["CMD", "curl", "-q", "--http1.1", "--max-time", "1.5", "--retry", "3", "-sfN", "-o", "/dev/null", "http://localhost:5000/tenants/{{ tenant_name }}"]
       interval: 1m
-      retries: 3
-      start_period: 30s
-      start_interval: 5s
+      retries: 1
+      start_period: 20s
+      start_interval: 2s
     extra_hosts:
       - "host.docker.internal:host-gateway"
     cpu_shares: 35
@@ -81,11 +81,11 @@ services:
       # Tune for lower resource usage for mostly idle RabbitMQ. Reduce the number of scheduler threads, lower limits, increase the GC interval.
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 1:1 +SDio 1 +P 1024 +Q 1024 +t 50000 +swct very_lazy +swt very_high +scl false +zdntgc 900"
     healthcheck:
-      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      test: [ "CMD", "rabbitmq-diagnostics", "--timeout", "2", "-q", "ping" ]
       interval: 90s
       retries: 2
-      start_period: 40s
-      start_interval: 10s
+      start_period: 30s
+      start_interval: 4s
     cpu_shares: 15
     hostname: "rabbitmq.{{ deployment_id }}"
     container_name: rciam-registry_rabbitmq
