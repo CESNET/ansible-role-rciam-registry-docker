@@ -35,19 +35,6 @@
   tags:
     - configuration
 
-- name: Place configuration files for the AMS agents
-  ansible.builtin.copy:
-    src: "{{ item.config }}"
-    dest: "{{ item.config_dest | default([federation_registry_config_path, 'ams-agent'] | join('/')) }}"
-    owner: "{{ item.owner | default('root') }}"
-    group: "{{ item.group | default('root') }}"
-    mode: "{{ item.mode | default('0644') }}"
-  loop: "{{ federation_registry_ams_agents }}"
-  notify:
-    - Restart all containers of RCIAM federation registry
-  tags:
-    - configuration
-
 - name: Place configuration files for the RabbitMQ agents
   ansible.builtin.copy:
     src: "{{ item.config }}"
