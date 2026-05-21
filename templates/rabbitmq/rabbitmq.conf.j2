@@ -1,8 +1,22 @@
-default_user = '{{ backend_rabbitmq_user }}'
-default_pass = '{{ backend_rabbitmq_password }}'
-default_vhost = '{{ backend_rabbitmq_vhost }}'
-default_user_tags.administrator = false
-log.console = true
-log.console.formatter.plaintext.format = [$level] $pid $msg
-log.file = false
+auth_mechanisms.1 = PLAIN
+definitions.import_backend = local_filesystem
+# Only initial provision, no update of passwords of existing users
+definitions.local.path = /etc/rabbitmq/initial-state-definitions.json
+definitions.skip_if_unchanged = true
 loopback_users = none
+
+log.console = true
+log.console.formatter.plaintext.format = [$level] $msg
+log.file = false
+
+# tuning resource utilization for light load
+background_gc_enabled = true
+background_gc_target_interval = 600000
+channel_max = 64
+collect_statistics_interval = 60000
+link_max_per_session = 16
+memory_monitor_interval = 60000
+num_acceptors.tcp = 1
+session_max_per_connection = 16
+tcp_listen_options.backlog = 32
+vm_memory_high_watermark.absolute = 192MiB

@@ -1,0 +1,37 @@
+{
+    "permissions": [
+        {
+            "configure": "^(.*deployment-results|.*service_cas_merged)$",
+            "read": "^(.*service_cas_merged|amq.default)$",
+            "user": "deployer",
+            "vhost": "rciam-registry",
+            "write": "^(.*deployment-results|amq.default)$"
+        },
+        {
+            "configure": "^(.*deployment-results|.*service_cas_merged)$",
+            "read": "^(.*deployment-results|amq.default)$",
+            "user": "rabbitmq-agent",
+            "vhost": "rciam-registry",
+            "write": "^(.*service_cas_merged|amq.default)$"
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "rciam-registry"
+        }
+    ],
+    "users": [
+        {
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "name": "deployer",
+            "password_hash": "{{ deployer_rabbitmq_hash }}",
+            "tags": []
+        },
+        {
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "name": "rabbitmq-agent",
+            "password_hash": "{{ rabbitmq_agent_rabbitmq_hash }}",
+            "tags": []
+        }
+    ]
+}

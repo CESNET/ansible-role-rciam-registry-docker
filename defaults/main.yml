@@ -12,10 +12,13 @@ db_config:
   password: mystery_but_not_so_secret
   sslmode: verify-full
 
-backend_rabbitmq_user: federation_registry_rabbitmquser
-backend_rabbitmq_host: rabbitmq.example.com
-backend_rabbitmq_vhost: example_com_fedreg
-backend_rabbitmq_password: romaine_lettuce
+rabbitmq-agent_rabbitmq_password: romaine_lettuce
+# created with rabbitmqctl hash_password
+rabbitmq_agent_rabbitmq_hash: vhiaqIlTf9QQ1a7Sl7C6uUioKAao2U1Fgi/mQDMjsFZvfnF5
+deployer_rabbitmq_password: happy_rabbit1
+# created with rabbitmqctl hash_password:
+deployer_rabbitmq_hash: cFANbvHXlz6M9Atzs6C/mXnYyR04Cwz1MaPz77+xR1LoEC+Y
+
 # defaults file for cesnet.federation_registry
 federation_registry_config_path: /etc/rciam-registry/
 federation_registry_data_path: /var/lib/rciam-registry/
@@ -43,6 +46,7 @@ federation_registry_templates: # without .j2, ensure the destination is file (no
   - { src: "templates/backend-config/.env", dest: "{{ federation_registry_config_path }}/backend-config/.env", group: 1000, mode: "0640" }
   - { src: "templates/compose.yaml", dest: "{{ federation_registry_config_path }}/compose.yaml", mode: "0640" }
   - { src: "templates/rabbitmq/rabbitmq.conf", dest: "{{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf", group: 415, mode: "0640" }
+  - { src: "templates/rabbitmq/initial-state-definitions.json", dest: "{{ federation_registry_config_path }}/rabbitmq/initial-state-definitions.json", group: 415, mode: "0640" }
 
 
 federation_registry_deployers: []
