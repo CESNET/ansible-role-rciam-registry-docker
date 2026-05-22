@@ -1,6 +1,36 @@
 ---
 # handlers file for cesnet.rciam_registry
-- name: Restart all containers of RCIAM federation registry
-  community.docker.docker_compose_v2:
+- name: Reload NGINX in frontend
+  community.docker.docker_compose_v2_exec:
+    service: frontend
+    command: nginx -s reload
     project_src: "{{ federation_registry_config_path }}"
+  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_frontend`)')
+
+- name: Restart backend-api
+  community.docker.docker_compose_v2:
+    services: backend-api
     state: restarted
+    project_src: "{{ federation_registry_config_path }}"
+  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_backend-api`)')
+
+- name: Restart deployers
+  community.docker.docker_compose_v2:
+    services: "deployer-{{ item.name }}"
+    state: restarted
+    project_src: "{{ federation_registry_config_path }}"
+  with_list: "{{ federation_registry_deployers }}"
+
+- name: Restart rabbitmq
+  community.docker.docker_compose_v2:
+    services: rabbitmq
+    state: restarted
+    project_src: "{{ federation_registry_config_path }}"
+  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_rabbitmq`)')
+
+- name: Restart rabbitmq-agents
+  community.docker.docker_compose_v2:
+    services: "rabbitmq-agent-{{ item.name }}"
+    state: restarted
+    project_src: "{{ federation_registry_config_path }}"
+  with_list: "{{ federation_registry_rabbitmq_agents }}"

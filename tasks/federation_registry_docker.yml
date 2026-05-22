@@ -16,8 +16,7 @@
     group: "{{ item.group | default('root') }}"
     mode: "{{ item.mode | default('0644') }}"
   loop: "{{ federation_registry_files }}"
-  notify:
-    - Restart all containers of RCIAM federation registry
+  notify: "{{ item.notify | default(false) }}"
   tags:
     - configuration
 
@@ -30,8 +29,7 @@
     group: "{{ item.group | default('root') }}"
     mode: "{{ item.mode | default('0644') }}"
   loop: "{{ federation_registry_templates }}"
-  notify:
-    - Restart all containers of RCIAM federation registry
+  notify: "{{ item.notify | default(false) }}"
   tags:
     - configuration
 
@@ -43,8 +41,7 @@
     group: "{{ item.group | default('root') }}"
     mode: "{{ item.mode | default('0644') }}"
   loop: "{{ federation_registry_rabbitmq_agents }}"
-  notify:
-    - Restart all containers of RCIAM federation registry
+  notify: Restart rabbitmq-agents
   tags:
     - configuration
 
@@ -52,7 +49,7 @@
   ansible.builtin.file:
     access_time: preserve
     modification_time: preserve
-    path: "{{ federation_registry_log_path}}/backend-api-errors.log"
+    path: "{{ federation_registry_log_path }}/backend-api-errors.log"
     state: touch
     owner: 1000
     mode: 0750
@@ -64,3 +61,5 @@
     state: present
     remove_orphans: true
     pull: always
+    wait: true
+  register: docker_compose_status

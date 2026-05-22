@@ -36,16 +36,48 @@ federation_registry_dirs:
 
 
 federation_registry_files:
-  - { src: "files/{{ deployment_id }}/backend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: 1000, mode: "0640" }
-  - { src: "files/{{ deployment_id }}/frontend-config", dest: "{{ federation_registry_config_path }}", owner: "root", group: 101, mode: "0640" }
-  - { src: "files/{{ deployment_id }}/deployer", dest: "{{ federation_registry_config_path }}", owner: "root", group: 1000, mode: "0640" }
+  - src: "files/{{ deployment_id }}/backend-config"
+    dest: "{{ federation_registry_config_path }}"
+    owner: "root"
+    group: 1000
+    mode: "0640"
+    notify: Restart backend-api
+  - src: "files/{{ deployment_id }}/frontend-config"
+    dest: "{{ federation_registry_config_path }}"
+    owner: "root"
+    group: 101
+    mode: "0640"
+    notify: Reload NGINX in frontend
+  - src: "files/{{ deployment_id }}/deployer"
+    dest: "{{ federation_registry_config_path }}"
+    owner: "root"
+    group: 1000
+    mode: "0640"
+    notify: Restart deployers
 
 federation_registry_templates: # without .j2, ensure the destination is file (not directory).
-  - { src: "templates/backend-config/db-config.json", dest: "{{ federation_registry_config_path }}/backend-config/db-config.json", group: 1000, mode: "0640" }
-  - { src: "templates/backend-config/.env", dest: "{{ federation_registry_config_path }}/backend-config/.env", group: 1000, mode: "0640" }
-  - { src: "templates/compose.yaml", dest: "{{ federation_registry_config_path }}/compose.yaml", mode: "0640" }
-  - { src: "templates/rabbitmq/rabbitmq.conf", dest: "{{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf", group: 415, mode: "0640" }
-  - { src: "templates/rabbitmq/initial-state-definitions.json", dest: "{{ federation_registry_config_path }}/rabbitmq/initial-state-definitions.json", group: 415, mode: "0640" }
+  - src: "templates/compose.yaml"
+    dest: "{{ federation_registry_config_path }}/compose.yaml"
+    mode: "0640"
+  - src: "templates/backend-config/db-config.json"
+    dest: "{{ federation_registry_config_path }}/backend-config/db-config.json"
+    group: 1000
+    mode: "0640"
+    notify: Restart backend-api
+  - src: "templates/backend-config/.env"
+    dest: "{{ federation_registry_config_path }}/backend-config/.env"
+    group: 1000
+    mode: "0640"
+    notify: Restart backend-api
+  - src: "templates/rabbitmq/rabbitmq.conf"
+    dest: "{{ federation_registry_config_path }}/rabbitmq/rabbitmq.conf"
+    group: 415
+    mode: "0640"
+    notify: Restart rabbitmq
+  - src: "templates/rabbitmq/initial-state-definitions.json"
+    dest: "{{ federation_registry_config_path }}/rabbitmq/initial-state-definitions.json"
+    group: 415
+    mode: "0640"
 
 
 federation_registry_deployers: []
