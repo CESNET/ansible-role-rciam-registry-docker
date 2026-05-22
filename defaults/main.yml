@@ -1,4 +1,3 @@
-#SPDX-License-Identifier: Apache-2.0
 ---
 deployment_id: localhost # Update to your specific deployment ID
 base_uri: "https://{{ deployment_id }}" # without tailing /

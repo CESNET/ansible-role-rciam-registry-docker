@@ -1,4 +1,3 @@
-#SPDX-License-Identifier: Apache-2.
 # tasks file for cesnet.federation_registry_docker
 ---
 - ansible.builtin.import_tasks: federation_registry_docker.yml
