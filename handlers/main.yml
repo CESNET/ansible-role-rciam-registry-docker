@@ -20,6 +20,9 @@
     state: restarted
     project_src: "{{ federation_registry_config_path }}"
   with_list: "{{ federation_registry_deployers }}"
+  # contains() on array is exact match, and no partial match is available. For now, match only the first container ID.
+  # Manual restart of the second container will be required, in case that first container has been restarted by docker-compose, but config has been updated for the second.
+  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_deployer-' + federation_registry_deployers[0].name + '`)')
 
 - name: Restart rabbitmq
   community.docker.docker_compose_v2:
@@ -34,3 +37,6 @@
     state: restarted
     project_src: "{{ federation_registry_config_path }}"
   with_list: "{{ federation_registry_rabbitmq_agents }}"
+  # contains() on array is exact match, and no partial match is available. For now, match only the first container ID.
+  # Manual restart of the second container will be required, in case that first container has been restarted by docker-compose, but config has been updated for the second
+  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_rabbitmq-agent-' + federation_registry_rabbitmq_agents[0].name + '`)')
