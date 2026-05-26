@@ -1,4 +1,25 @@
 ---
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid }}"
+    shell: /usr/sbin/nologin
+    create_home: no
+    home: "/etc/rciam-registry/{{ item.name }}"
+    system: true
+
+  with_list:
+    - name: frontend
+      uid: 743
+    - name: backend-api
+      uid: 780
+    - name: rabbitmq-agent
+      uid: 728
+    - name: rabbitmq
+      uid: 756
+    - name: deployer
+      uid: 712
+
 - name: Create directories
   ansible.builtin.file:
     path: "{{ item.path }}"
@@ -22,7 +43,7 @@
         src: "files/{{ deployment_id }}/frontend"
         dest: "{{ federation_registry_config_path }}"
         owner: root
-        group: 101
+        group: frontend
         mode: "0640"
       notify: Reload NGINX in frontend
 
@@ -31,7 +52,7 @@
         src: "files/{{ deployment_id }}/backend"
         dest: "{{ federation_registry_config_path }}"
         owner: "root"
-        group: 1000
+        group: backend-api
         mode: "0640"
       notify: Restart backend-api
 
@@ -40,7 +61,7 @@
         src: "{{ item.src }}.j2"
         dest: "{{ item.dest | default(item.src) }}"
         owner: "{{ item.owner | default('root') }}"
-        group: "{{ item.group | default(1000) }}"
+        group: "{{ item.group | default('backend-api') }}"
         mode: "{{ item.mode | default('0640') }}"
       notify: Restart backend-api
       with_list:
@@ -54,7 +75,7 @@
         src: "files/{{ deployment_id }}/deployer"
         dest: "{{ federation_registry_config_path }}"
         owner: "root"
-        group: 1000
+        group: deployer
         mode: "0640"
       notify: Restart deployers
       when: federation_registry_deployers | length > 0
@@ -64,7 +85,7 @@
         src: "{{ item.src }}.j2"
         dest: "{{ item.dest | default(item.src) }}"
         owner: "{{ item.owner | default('root') }}"
-        group: "{{ item.group | default(415) }}"
+        group: "{{ item.group | default('rabbitmq') }}"
         mode: "{{ item.mode | default('0640') }}"
       notify: Restart rabbitmq
       with_list:
@@ -78,7 +99,7 @@
         src: "{{ item.config }}"
         dest: "{{ item.config_dest | default([federation_registry_config_path, 'rabbitmq-agent'] | join('/')) }}"
         owner: "{{ item.owner | default('root') }}"
-        group: "{{ item.group | default('root') }}"
+        group: "{{ item.group | default('rabbitmq-agent') }}"
         mode: "{{ item.mode | default('0644') }}"
       notify: Restart rabbitmq-agents
       with_list: "{{ federation_registry_rabbitmq_agents }}"
@@ -91,7 +112,7 @@
     modification_time: preserve
     path: "{{ federation_registry_log_path }}/backend-api-errors.log"
     state: touch
-    owner: 1000
+    owner: backend-api
     mode: "0750"
 
 - name: docker compose up --pull=always
