@@ -19,7 +19,7 @@
 
     - name: Copy files for frontend
       ansible.builtin.copy:
-        src: "files/{{ deployment_id }}/frontend-config"
+        src: "files/{{ deployment_id }}/frontend"
         dest: "{{ federation_registry_config_path }}"
         owner: root
         group: 101
@@ -28,7 +28,7 @@
 
     - name: Copy files for backend-api
       ansible.builtin.copy:
-        src: "files/{{ deployment_id }}/backend-config"
+        src: "files/{{ deployment_id }}/backend"
         dest: "{{ federation_registry_config_path }}"
         owner: "root"
         group: 1000
@@ -44,10 +44,10 @@
         mode: "{{ item.mode | default('0640') }}"
       notify: Restart backend-api
       with_list:
-        - src: "templates/backend-config/db-config.json"
-          dest: "{{ federation_registry_config_path }}/backend-config/db-config.json"
-        - src: "templates/backend-config/.env"
-          dest: "{{ federation_registry_config_path }}/backend-config/.env"
+        - src: "templates/backend/db-config.json"
+          dest: "{{ federation_registry_config_path }}/backend/db-config.json"
+        - src: "templates/backend/.env"
+          dest: "{{ federation_registry_config_path }}/backend/.env"
 
     - name: Copy files for deployer
       ansible.builtin.copy:

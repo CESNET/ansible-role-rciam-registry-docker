@@ -6,12 +6,12 @@ services:
     network_mode: host
     restart: unless-stopped
     volumes:
-      - {{ federation_registry_config_path }}/frontend-config/nginx.conf:/etc/nginx/nginx.conf:ro
-      - {{ federation_registry_config_path }}/frontend-config/nginx-frontend.conf:/etc/nginx/conf.d/nginx-frontend.conf:ro
-      - {{ federation_registry_config_path }}/frontend-config/federation-registry-cert.pem:/etc/ssl/certs/federation-registry-cert.pem:ro
-      - {{ federation_registry_config_path }}/frontend-config/federation-registry-key.pem:/etc/ssl/private/federation-registry-key.pem:ro
-      - {{ federation_registry_config_path }}/frontend-config/img/:/var/www/federation_registry_frontend/img/:ro
-      - {{ federation_registry_config_path }}/frontend-config/.well-known/:/var/www/federation_registry_frontend/.well-known/:ro
+      - {{ federation_registry_config_path }}/frontend/nginx.conf:/etc/nginx/nginx.conf:ro
+      - {{ federation_registry_config_path }}/frontend/nginx-frontend.conf:/etc/nginx/conf.d/nginx-frontend.conf:ro
+      - {{ federation_registry_config_path }}/frontend/federation-registry-cert.pem:/etc/ssl/certs/federation-registry-cert.pem:ro
+      - {{ federation_registry_config_path }}/frontend/federation-registry-key.pem:/etc/ssl/private/federation-registry-key.pem:ro
+      - {{ federation_registry_config_path }}/frontend/img/:/var/www/federation_registry_frontend/img/:ro
+      - {{ federation_registry_config_path }}/frontend/.well-known/:/var/www/federation_registry_frontend/.well-known/:ro
       - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro
     depends_on:
       backend-api:
@@ -39,11 +39,11 @@ services:
         ipv6_address: fd77:fed:bac::80
 
     volumes:
-      - {{ federation_registry_config_path }}/backend-config/config.json:/app/JavaScript/config.json:ro
-      - {{ federation_registry_config_path }}/backend-config/email_transport_conf.json:/app/JavaScript/email_transport_conf.json:ro
-      - {{ federation_registry_config_path }}/backend-config/db-config.json:/app/db-config/db-config.json:ro
-      - {{ federation_registry_config_path }}/backend-config/tenant-config/:/app/JavaScript/tenant_config/:ro
-      - {{ federation_registry_config_path }}/backend-config/.env:/app/JavaScript/.env:ro
+      - {{ federation_registry_config_path }}/backend/config.json:/app/JavaScript/config.json:ro
+      - {{ federation_registry_config_path }}/backend/email_transport_conf.json:/app/JavaScript/email_transport_conf.json:ro
+      - {{ federation_registry_config_path }}/backend/db-config.json:/app/db-config/db-config.json:ro
+      - {{ federation_registry_config_path }}/backend/tenant-config/:/app/JavaScript/tenant_config/:ro
+      - {{ federation_registry_config_path }}/backend/.env:/app/JavaScript/.env:ro
       - {{ federation_registry_log_path }}/backend-api-errors.log:/app/JavaScript/db/errors.log:rw
       - {{ federation_registry_log_path }}/backend-api:/app/JavaScript/logs/:rw
       - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro

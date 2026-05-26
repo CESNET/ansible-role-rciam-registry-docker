@@ -23,9 +23,9 @@ federation_registry_config_path: /etc/rciam-registry/
 federation_registry_data_path: /var/lib/rciam-registry/
 federation_registry_log_path: /var/log/rciam-registry/
 federation_registry_dirs:
-  - { path: "{{ federation_registry_config_path }}/frontend-config", owner: "root", group: 101, mode: "0750" }
-  - { path: "{{ federation_registry_config_path }}/frontend-config/.well-known", owner: "root", group: 101, mode: "0750" }
-  - { path: "{{ federation_registry_config_path }}/backend-config", owner: "root", group: "root", mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/frontend", owner: "root", group: 101, mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/frontend/.well-known", owner: "root", group: 101, mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/backend", owner: "root", group: "root", mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/rabbitmq-agent", owner: "root", group: "root", mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/rabbitmq", owner: "root", group: 415, mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/deployer", owner: "root", group: 1000, mode: "0750" }
