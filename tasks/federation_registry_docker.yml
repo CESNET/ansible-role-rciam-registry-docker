@@ -57,6 +57,7 @@
         group: 1000
         mode: "0640"
       notify: Restart deployers
+      when: federation_registry_deployers | length > 0
 
     - name: Copy templates for RabbitMQ
       ansible.builtin.template:
@@ -106,7 +107,7 @@
   ansible.builtin.debug:
     msg: "{{ docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id') }}"
   ignore_errors: "{{ ansible_check_mode }}"
-  when: docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id') != []
+  when: docker_compose_status is defined and docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id') != []
   changed_when: docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id') != []
 
 - name: flush handlers

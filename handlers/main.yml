@@ -5,14 +5,15 @@
     service: frontend
     command: nginx -s reload
     project_src: "{{ federation_registry_config_path }}"
-  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_frontend`)')
+  when:
+    docker_compose_status is undefined or not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_frontend`)')
 
 - name: Restart backend-api
   community.docker.docker_compose_v2:
     services: backend-api
     state: restarted
     project_src: "{{ federation_registry_config_path }}"
-  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_backend-api`)')
+  when: docker_compose_status is undefined or not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_backend-api`)')
 
 - name: Restart deployers
   community.docker.docker_compose_v2:
@@ -21,15 +22,16 @@
     project_src: "{{ federation_registry_config_path }}"
   with_list: "{{ federation_registry_deployers }}"
   # contains() on array is exact match, and no partial match is available. For now, match only the first container ID.
-  # Manual restart of the second container will be required, in case that first container has been restarted by docker-compose, but config has been updated for the second.
-  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_deployer-' + federation_registry_deployers[0].name + '`)')
+  # If more than one deployer is defined, all of those will be restarted
+  # May be improved when more deployers will be necessary, by adding more conditionals for match of (deployer[0] or deployer[1])
+  when: federation_registry_rabbitmq_agents | length > 1 or (docker_compose_status is undefined or not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_deployer-' + federation_registry_deployers[0].name + '`)'))
 
 - name: Restart rabbitmq
   community.docker.docker_compose_v2:
     services: rabbitmq
     state: restarted
     project_src: "{{ federation_registry_config_path }}"
-  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_rabbitmq`)')
+  when: docker_compose_status is undefined or not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_rabbitmq`)')
 
 - name: Restart rabbitmq-agents
   community.docker.docker_compose_v2:
@@ -38,5 +40,6 @@
     project_src: "{{ federation_registry_config_path }}"
   with_list: "{{ federation_registry_rabbitmq_agents }}"
   # contains() on array is exact match, and no partial match is available. For now, match only the first container ID.
-  # Manual restart of the second container will be required, in case that first container has been restarted by docker-compose, but config has been updated for the second
-  when: not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_rabbitmq-agent-' + federation_registry_rabbitmq_agents[0].name + '`)')
+  # If more than one RabbitMQ agent is defined, all of those will be restarted
+  when:
+    - federation_registry_rabbitmq_agents | length > 1 or (docker_compose_status is undefined or not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_rabbitmq-agent-' + federation_registry_rabbitmq_agents[0].name + '`)'))
