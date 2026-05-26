@@ -12,7 +12,7 @@ services:
       - {{ federation_registry_config_path }}/frontend-config/federation-registry-key.pem:/etc/ssl/private/federation-registry-key.pem:ro
       - {{ federation_registry_config_path }}/frontend-config/img/:/var/www/federation_registry_frontend/img/:ro
       - {{ federation_registry_config_path }}/frontend-config/.well-known/:/var/www/federation_registry_frontend/.well-known/:ro
-      - /etc/localtime:/etc/localtime:ro
+      - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro
     depends_on:
       backend-api:
         condition: service_healthy
@@ -46,7 +46,7 @@ services:
       - {{ federation_registry_config_path }}/backend-config/.env:/app/JavaScript/.env:ro
       - {{ federation_registry_log_path }}/backend-api-errors.log:/app/JavaScript/db/errors.log:rw
       - {{ federation_registry_log_path }}/backend-api:/app/JavaScript/logs/:rw
-      - /etc/localtime:/etc/localtime:ro
+      - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -76,7 +76,7 @@ services:
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq:/etc/rabbitmq:ro
       - /var/lib/rciam-registry/rabbitmq:/var/lib/rabbitmq:rw
-      - /etc/localtime:/etc/localtime:ro
+      - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro
     environment:
       # Tune for lower resource usage for mostly idle RabbitMQ. Reduce the number of scheduler threads, lower limits, increase the GC interval.
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 1:1 +SDio 1 +P 1024 +Q 1024 +t 50000 +swct very_lazy +swt very_high +scl false +zdntgc 900"
@@ -100,7 +100,7 @@ services:
         ipv6_address: "fd77:fed:de::{{ deployer_item.id }}"
     volumes:
       - {{ federation_registry_config_path }}/deployer/{{ deployer_item.config_dir | basename }}:/app/conf:ro
-      - /etc/localtime:/etc/localtime:ro
+      - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro
     depends_on:
       backend-api:
         condition: service_healthy
@@ -129,7 +129,7 @@ services:
         ipv6_address: "fd77:fed:abba::{{ rabbitmq_agent_item.id }}"
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq-agent/{{ rabbitmq_agent_item.config | basename }}:/app/config.json:ro
-      - /etc/localtime:/etc/localtime:ro
+      - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro
     cpu_shares: 10
     hostname: "rabbitmq-agent-{{ rabbitmq_agent_item.name }}.{{ deployment_id }}"
     container_name: rciam-registry_rabbitmq-agent-{{ rabbitmq_agent_item.name }}
