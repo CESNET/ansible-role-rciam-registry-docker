@@ -92,7 +92,6 @@
     state: touch
     owner: 1000
     mode: 0750
-    attributes: +a
 
 - name: Ensure federation_registry docker-compose has started
   community.docker.docker_compose_v2:
