@@ -23,7 +23,7 @@
         dest: "{{ federation_registry_config_path }}"
         owner: root
         group: 101
-        mode: '0640'
+        mode: "0640"
       notify: Reload NGINX in frontend
 
     - name: Copy files for backend-api
@@ -81,9 +81,9 @@
         group: "{{ item.group | default('root') }}"
         mode: "{{ item.mode | default('0644') }}"
       notify: Restart rabbitmq-agents
-      tags:
-        - configuration
       with_list: "{{ federation_registry_rabbitmq_agents }}"
+  tags:
+    - configuration
 
 - name: Ensure log file exists for the backend-api
   ansible.builtin.file:
@@ -92,9 +92,9 @@
     path: "{{ federation_registry_log_path }}/backend-api-errors.log"
     state: touch
     owner: 1000
-    mode: 0750
+    mode: "0750"
 
-- name: Ensure federation_registry docker-compose has started
+- name: docker compose up --pull=always
   community.docker.docker_compose_v2:
     project_src: "{{ federation_registry_config_path }}"
     state: present
@@ -102,13 +102,17 @@
     pull: always
     wait: true
   register: docker_compose_status
+  tags:
+    - configuration
 
-- name: Show restarted containers
+- name: Show containers, restarted by docker compose up
   ansible.builtin.debug:
     msg: "{{ docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id') }}"
   ignore_errors: "{{ ansible_check_mode }}"
   when: docker_compose_status is defined and docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id') != []
   changed_when: docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id') != []
+  tags:
+    - configuration
 
 - name: flush handlers
   meta: flush_handlers
