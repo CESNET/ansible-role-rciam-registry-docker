@@ -31,8 +31,18 @@
     services: rabbitmq
     state: restarted
     project_src: "{{ federation_registry_config_path }}"
+    wait: true
+  register: rabbitmq_restarted
   when: docker_compose_status is undefined or not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_rabbitmq`)')
 
+- name: rabbitmqctl import_definitions
+  community.docker.docker_compose_v2_exec:
+    service: rabbitmq
+    command: rabbitmqctl -q import_definitions /etc/rabbitmq/definitions.json
+    project_src: "{{ federation_registry_config_path }}"
+  when:
+    - rabbitmq_restarted is undefined
+    - docker_compose_status is undefined or not docker_compose_status | community.general.json_query('actions[?status==`Recreate`].id | contains(@, `rciam-registry_rabbitmq`)')
 - name: Restart rabbitmq-agents
   community.docker.docker_compose_v2:
     services: "rabbitmq-agent-{{ item.name }}"
