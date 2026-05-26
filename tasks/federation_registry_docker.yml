@@ -29,15 +29,18 @@
     state: directory
   loop: "{{ federation_registry_dirs }}"
 
-- name: Copy files
-  block:
-    # Copying files in individual tasks to run only the required handlers
-    - name: Copy compose.yaml
-      ansible.builtin.template:
-        src: "templates/compose.yaml.j2"
-        dest: "{{ federation_registry_config_path }}/compose.yaml"
-        mode: "0640"
+- name: Ensure log file exists for the backend-api
+  ansible.builtin.file:
+    access_time: preserve
+    modification_time: preserve
+    path: "{{ federation_registry_log_path }}/backend-api-errors.log"
+    state: touch
+    owner: backend-api
+    mode: "0750"
 
+- name: Copy files
+  # Copying files in individual tasks to run only the required handlers
+  block:
     - name: Copy files for frontend
       ansible.builtin.copy:
         src: "files/{{ deployment_id }}/frontend"
@@ -49,7 +52,7 @@
 
     - name: Copy files for backend-api
       ansible.builtin.copy:
-        src: "files/{{ deployment_id }}/backend"
+        src: "files/{{ deployment_id }}/backend-api"
         dest: "{{ federation_registry_config_path }}"
         owner: "root"
         group: backend-api
@@ -65,10 +68,10 @@
         mode: "{{ item.mode | default('0640') }}"
       notify: Restart backend-api
       with_list:
-        - src: "templates/backend/db-config.json"
-          dest: "{{ federation_registry_config_path }}/backend/db-config.json"
-        - src: "templates/backend/.env"
-          dest: "{{ federation_registry_config_path }}/backend/.env"
+        - src: "templates/backend-api/db-config.json"
+          dest: "{{ federation_registry_config_path }}/backend-api/db-config.json"
+        - src: "templates/backend-api/.env"
+          dest: "{{ federation_registry_config_path }}/backend-api/.env"
 
     - name: Copy files for deployer
       ansible.builtin.copy:
@@ -107,17 +110,14 @@
         mode: "{{ item.mode | default('0644') }}"
       notify: Restart rabbitmq-agents
       with_list: "{{ federation_registry_rabbitmq_agents }}"
+
+    - name: Copy compose.yaml
+      ansible.builtin.template:
+        src: "templates/compose.yaml.j2"
+        dest: "{{ federation_registry_config_path }}/compose.yaml"
+        mode: "0640"
   tags:
     - configuration
-
-- name: Ensure log file exists for the backend-api
-  ansible.builtin.file:
-    access_time: preserve
-    modification_time: preserve
-    path: "{{ federation_registry_log_path }}/backend-api-errors.log"
-    state: touch
-    owner: backend-api
-    mode: "0750"
 
 - name: docker compose up --pull=always
   community.docker.docker_compose_v2:

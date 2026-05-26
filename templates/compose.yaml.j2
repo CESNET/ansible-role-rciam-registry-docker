@@ -39,11 +39,11 @@ services:
         ipv6_address: fd77:fed:bac::80
 
     volumes:
-      - {{ federation_registry_config_path }}/backend/config.json:/app/JavaScript/config.json:ro
-      - {{ federation_registry_config_path }}/backend/email_transport_conf.json:/app/JavaScript/email_transport_conf.json:ro
-      - {{ federation_registry_config_path }}/backend/db-config.json:/app/db-config/db-config.json:ro
-      - {{ federation_registry_config_path }}/backend/tenant-config/:/app/JavaScript/tenant_config/:ro
-      - {{ federation_registry_config_path }}/backend/.env:/app/JavaScript/.env:ro
+      - {{ federation_registry_config_path }}/backend-api/config.json:/app/JavaScript/config.json:ro
+      - {{ federation_registry_config_path }}/backend-api/email_transport_conf.json:/app/JavaScript/email_transport_conf.json:ro
+      - {{ federation_registry_config_path }}/backend-api/db-config.json:/app/db-config/db-config.json:ro
+      - {{ federation_registry_config_path }}/backend-api/tenant-config/:/app/JavaScript/tenant_config/:ro
+      - {{ federation_registry_config_path }}/backend-api/.env:/app/JavaScript/.env:ro
       - {{ federation_registry_log_path }}/backend-api-errors.log:/app/JavaScript/db/errors.log:rw
       - {{ federation_registry_log_path }}/backend-api:/app/JavaScript/logs/:rw
       - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro

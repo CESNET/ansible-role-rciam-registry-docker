@@ -25,7 +25,7 @@ federation_registry_log_path: /var/log/rciam-registry/
 federation_registry_dirs:
   - { path: "{{ federation_registry_config_path }}/frontend", owner: "root", group: "frontend", mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/frontend/.well-known", owner: "root", group: "frontend", mode: "0750" }
-  - { path: "{{ federation_registry_config_path }}/backend", owner: "root", group: "backend-api", mode: "0750" }
+  - { path: "{{ federation_registry_config_path }}/backend-api", owner: "root", group: "backend-api", mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/rabbitmq-agent", owner: "root", group: "rabbitmq-agent", mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/rabbitmq", owner: "root", group: "rabbitmq", mode: "0750" }
   - { path: "{{ federation_registry_config_path }}/deployer", owner: "root", group: "deployer", mode: "0750" }
