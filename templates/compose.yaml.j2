@@ -44,8 +44,6 @@ services:
       - {{ federation_registry_config_path }}/backend-api/db-config.json:/app/db-config/db-config.json:ro
       - {{ federation_registry_config_path }}/backend-api/tenant-config/:/app/JavaScript/tenant_config/:ro
       - {{ federation_registry_config_path }}/backend-api/.env:/app/JavaScript/.env:ro
-      - {{ federation_registry_log_path }}/backend-api-errors.log:/app/JavaScript/db/errors.log:rw
-      - {{ federation_registry_log_path }}/backend-api:/app/JavaScript/logs/:rw
       - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro
     depends_on:
       rabbitmq:
