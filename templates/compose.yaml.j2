@@ -2,7 +2,7 @@
 
 services:
   frontend:
-    image: "cerit.io/khomutskyi/federation-registry-frontend:{{ deployment_id }}"
+    image: "cerit.io/khomutskyi/rciam-registry_frontend:{{ deployment_id }}"
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -31,7 +31,7 @@ services:
     container_name: rciam-registry_frontend
 
   backend-api:
-    image: cerit.io/khomutskyi/federation-registry-backend-api:latest
+    image: cerit.io/khomutskyi/rciam-registry_backend-api:latest
     restart: unless-stopped
     networks:
       backend:
@@ -62,7 +62,7 @@ services:
 
 ### RabbitMQ
   rabbitmq:
-    image: cerit.io/khomutskyi/federation-registry-rabbitmq:latest
+    image: cerit.io/khomutskyi/rciam-registry_rabbitmq:latest
     restart: unless-stopped
     networks:
       rabbitmq-agent:
@@ -90,7 +90,7 @@ services:
 ### Deployer
 {% for deployer_item in federation_registry_deployers %}
   deployer-{{ deployer_item.name }}:
-    image: cerit.io/khomutskyi/federation-registry-deployer:latest
+    image: cerit.io/khomutskyi/rciam-registry_deployer:latest
     restart: unless-stopped
     networks:
       deployer:
@@ -117,7 +117,7 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    image: cerit.io/khomutskyi/federation-registry-backend-rabbitmq-agent:latest
+    image: cerit.io/khomutskyi/rciam-registry_rabbitmq-agent:latest
     restart: unless-stopped
     networks:
       backend:
