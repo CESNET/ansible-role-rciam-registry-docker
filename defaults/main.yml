@@ -19,6 +19,7 @@ deployer_rabbitmq_password: happy_rabbit1
 deployer_rabbitmq_hash: cFANbvHXlz6M9Atzs6C/mXnYyR04Cwz1MaPz77+xR1LoEC+Y
 
 # defaults file for cesnet.federation_registry
+federation_registry_build_containers: false # true -> build locally, instead of downloading from the registry
 federation_registry_config_path: /etc/rciam-registry/
 federation_registry_data_path: /var/lib/rciam-registry/
 federation_registry_log_path: /var/log/rciam-registry/
@@ -31,7 +32,7 @@ federation_registry_dirs:
   - { path: "{{ federation_registry_config_path }}/deployer", owner: "root", group: "deployer", mode: "0750" }
   - { path: "{{ federation_registry_log_path }}", owner: "root", group: "root", mode: "0750" }
   - { path: "{{ federation_registry_log_path }}/backend-api", owner: "root", group: "backend-api", mode: "0750" }
-  - { path: "{{ federation_registry_data_path }}", owner: "root", group: "root", mode: "0750" }
+  - { path: "{{ federation_registry_data_path }}", owner: "root", group: "root", mode: "0755" }
   - { path: "{{ federation_registry_data_path }}/rabbitmq", owner: "rabbitmq", group: "rabbitmq", mode: "0700" }
 
 federation_registry_deployers: []

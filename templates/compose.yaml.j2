@@ -3,6 +3,10 @@
 services:
   frontend:
     image: "cerit.io/khomutskyi/rciam-registry_frontend:{{ deployment_id }}"
+    build:
+      context: "{{ federation_registry_data_path }}/docker/frontend"
+      args:
+        FRONTEND_CONFIG: "config/{{ deployment_id }}.json"
     network_mode: host
     restart: unless-stopped
     volumes:
@@ -32,6 +36,7 @@ services:
 
   backend-api:
     image: cerit.io/khomutskyi/rciam-registry_backend-api:latest
+    build: "{{ federation_registry_data_path }}/docker/backend-api"
     restart: unless-stopped
     networks:
       backend:
@@ -63,6 +68,7 @@ services:
 ### RabbitMQ
   rabbitmq:
     image: cerit.io/khomutskyi/rciam-registry_rabbitmq:latest
+    build: "{{ federation_registry_data_path }}/docker/rabbitmq"
     restart: unless-stopped
     networks:
       rabbitmq-agent:
@@ -73,7 +79,7 @@ services:
         ipv6_address: fd77:fed:de::56
     volumes:
       - {{ federation_registry_config_path }}/rabbitmq:/etc/rabbitmq:ro
-      - /var/lib/rciam-registry/rabbitmq:/var/lib/rabbitmq:rw
+      - {{ federation_registry_data_path }}/rabbitmq:/var/lib/rabbitmq:rw
       - /usr/share/zoneinfo/Etc/UTC:/etc/localtime:ro
     environment:
       # Tune for lower resource usage for mostly idle RabbitMQ. Reduce the number of scheduler threads, lower limits, increase the GC interval.
@@ -91,6 +97,7 @@ services:
 {% for deployer_item in federation_registry_deployers %}
   deployer-{{ deployer_item.name }}:
     image: cerit.io/khomutskyi/rciam-registry_deployer:latest
+    build: "{{ federation_registry_data_path }}/docker/deployer"
     restart: unless-stopped
     networks:
       deployer:
@@ -118,6 +125,7 @@ services:
       rabbitmq:
         condition: service_healthy
     image: cerit.io/khomutskyi/rciam-registry_rabbitmq-agent:latest
+    build: "{{ federation_registry_data_path }}/docker/rabbitmq-agent"
     restart: unless-stopped
     networks:
       backend:

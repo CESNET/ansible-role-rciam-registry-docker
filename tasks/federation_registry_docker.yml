@@ -116,15 +116,23 @@
         src: "templates/compose.yaml.j2"
         dest: "{{ federation_registry_config_path }}/compose.yaml"
         mode: "0640"
+
+    - name: Copy Dockerfiles
+      ansible.builtin.copy:
+        src: files/docker/
+        dest: /var/lib/rciam-registry/
+        mode: 0755
+      when: federation_registry_build_containers
   tags:
     - configuration
 
-- name: docker compose up --pull=always
+- name: docker compose up
   community.docker.docker_compose_v2:
     project_src: "{{ federation_registry_config_path }}"
     state: present
     remove_orphans: true
-    pull: always
+    build: "{{ 'always' if federation_registry_build_containers else 'never' }}"
+    pull: "{{ 'always' if not federation_registry_build_containers else 'never' }}"
     wait: true
   register: docker_compose_status
   tags:
